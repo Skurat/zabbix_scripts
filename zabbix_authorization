@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","method":"user.login","params":{"username":"${api_user}","password":"'$api_user_pass'"},"id":1}
