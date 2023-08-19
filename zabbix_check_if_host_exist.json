@@ -1,1 +1,1 @@
-{"jsonrpc":"2.0","method":"host.get","params":{"filter":{"ip":["$agent_ip"]}},"id":1}
+{"jsonrpc":"2.0","method":"host.get","params":{"filter":{"ip":["$agent_ip"],"excludeSearch":false}},"id":1}
