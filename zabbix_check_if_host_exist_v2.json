@@ -1,1 +1,1 @@
-{"jsonrpc":"2.0","method":"host.get","params":{"filter":{"ip":"$host_ip"},"excludeSearch":{"groupids":"25"},"selectInterfaces":["ip"]},"id":1}
+{"jsonrpc":"2.0","method":"host.get","params":{"output":["hostid","host","ip"],"filter":{"ip":"$host_ip"},"excludeSearch":{"groupids":"25"},"selectInterfaces":["ip"]},"id":1}
