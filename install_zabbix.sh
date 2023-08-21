@@ -44,7 +44,7 @@ remove_from_zabbix_server(){
     remove_host_data=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_delete_host.json  | sed "s/\$host_id/$host_id/")
 
     # Request for remove host from zabbix server
-    curl --request POST \
+    curl -s --request POST \
     --url "$zabbix_server_url" \
     --header "Authorization: Bearer ${AUTHORIZATION_TOKEN}" \
     --header 'Content-Type: application/json-rpc' \
@@ -54,7 +54,7 @@ remove_from_zabbix_server(){
 check_if_host_exist(){
     get_host_data=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_check_if_host_exist.json  | sed "s/\$agent_ip/$agent_ip/")
 
-    exist=$(curl --request POST \
+    exist=$(curl -s --request POST \
     --url "$zabbix_server_url" \
     --header "Authorization: Bearer ${AUTHORIZATION_TOKEN}" \
     --header 'Content-Type: application/json-rpc' \
@@ -70,7 +70,7 @@ check_if_host_exist(){
 add_agent_to_server(){
     data_auth=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_authorization.json  | sed "s/\$api_user/$api_user/" | sed "s/\$api_user_pass/$api_user_pass/")
 
-    AUTHORIZATION_TOKEN=$(curl --request POST \
+    AUTHORIZATION_TOKEN=$(curl -s --request POST \
     --url "$zabbix_server_url" \
     --header 'Content-Type: application/json-rpc' \
     --data $data_auth | cut -d',' -f2 | cut -d':' -f2 | sed -r 's/"//g')
@@ -94,9 +94,9 @@ add_agent_to_server(){
     --data $data_create_host
 }
 
-remove_old_zabbix
-install_zabbix
-config_zabbix
+# remove_old_zabbix
+# install_zabbix
+# config_zabbix
 add_agent_to_server
 
-rm -rf "$0"
+# rm -rf "$0"
