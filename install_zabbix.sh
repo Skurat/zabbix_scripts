@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-hostname="$1"
+hostname="$HOST_NAME"
+# hostname="$1"
 groupname="25"
 agent_ip="$(hostname -I | awk '{print $1}')"
 server_ip="65.108.196.236"
