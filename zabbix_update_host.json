@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","method":"host.update","params":{"host":"$hostname","interfaces":[{"type":1,"main":1,"useip":1,"ip":"$agent_ip","dns":"","port":"10050"}],"groups":[{"groupid":"$groupid"}],"templates":[{"templateid":"10001"}],"inventory_mode":"-1"},"id":1}
