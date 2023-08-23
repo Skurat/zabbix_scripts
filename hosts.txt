@@ -1,0 +1,5 @@
+65.21.242.213 24 #temporarely_group
+65.21.242.215 255 #temporarely_group
+65.21.242.214 20 #temporarely_group
+65.21.242.216 24 #temporarely_group
+# Last line need to be for read previous line # THIS FILE IS EXAMPLE - change hosts and group to your needed
