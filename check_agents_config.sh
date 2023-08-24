@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 version="6.4"
 zabbix_server_url="http://localhost:8080/zabbix/api_jsonrpc.php"
-user="Admin"
-admin_pass="3wxcZB0C3xnj"
+user=""
+admin_pass=""
 
 auth_via_admin(){
         data_auth=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_authorization.json  | sed "s/\$api_user/$user/" | sed "s/\$api_user_pass/$admin_pass/")
