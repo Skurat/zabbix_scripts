@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 version="6.4"
-zabbix_server_url="http://65.108.196.236:8080/zabbix/api_jsonrpc.php"
+zabbix_server_url="http://localhost:8080/zabbix/api_jsonrpc.php"
 user="Admin"
 admin_pass="3wxcZB0C3xnj"
 
@@ -10,11 +10,11 @@ auth_via_admin(){
         --url "$zabbix_server_url" \
         --header 'Content-Type: application/json-rpc' \
         --data $data_auth)
-        #  | grep -o -E '"result":"(\w+)' | tail -n1 | cut -d':' -f2 | grep -o -E '\w+'
+        #  | grep -o -P '"result":"(\w+)' | tail -n1 | cut -d':' -f2 | grep -o -P '\w+'
         if [[ "$(echo $ADMIN_AUTHORIZATION_TOKEN_RESULT | grep 'error')" ]]; then
             return 0
         else
-            ADMIN_AUTHORIZATION_TOKEN="$(echo $ADMIN_AUTHORIZATION_TOKEN_RESULT | grep -o -E '"result":"(\w+)' | tail -n1 | cut -d':' -f2 | grep -o -E '\w+')"
+            ADMIN_AUTHORIZATION_TOKEN="$(echo $ADMIN_AUTHORIZATION_TOKEN_RESULT | grep -o -P '"result":"(\w+)' | tail -n1 | cut -d':' -f2 | grep -o -P '\w+')"
             echo "${ADMIN_AUTHORIZATION_TOKEN}"
         fi
 }
@@ -47,14 +47,15 @@ check_same_config_as_in_hosts(){
                 --header "Authorization: Bearer ${ADMIN_AUTHORIZATION_TOKEN}" \
                 --header 'Content-Type: application/json-rpc' \
                 --data "$data_check_host")
-
+            echo "IP - $HOST_IP"
             if [[ "$(echo $CHECK_HOST_GROUP | grep 'hostid')" ]]; then
-                HOST_ID="$(echo "$CHECK_HOST_GROUP" | grep -o -E '\"hostid\":\"\d+\"' | grep -o -E "\d+" | tail -n1)"
+                HOST_ID="$(echo "$CHECK_HOST_GROUP" | grep -o -P '\"hostid\":\"\d+\"' | grep -o -P "\d+" | tail -n1)"
                 if [[ ! "$(echo CHECK_HOST_GROUP | grep '{"groupid":"'"$GROUP_ID"'"}')" ]]; then
                     GROUP_EXIST="$(check_if_group_exist "$GROUP_ID")"
+                    echo "GROUP_EXIST = $GROUP_EXIST"
                     if [[ "${GROUP_EXIST}" == 'true' ]]; then
                         data_update_host=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_update_host.json  | sed "s/\$hostid/$HOST_ID/" | sed "s/\$groupid/$GROUP_ID/" | sed "s/\"${GROUP_ID}\"/{\"groupid\":\"${GROUP_ID}\"}/")
-                        # echo $data_update_host
+                        echo "IF = $HOST_IP - $data_update_host"
                         curl -s --request POST \
                             --url "$zabbix_server_url" \
                             --header "Authorization: Bearer ${ADMIN_AUTHORIZATION_TOKEN}" \
@@ -63,7 +64,7 @@ check_same_config_as_in_hosts(){
                     else
                         GROUP_ID="26"
                         data_update_host=$(wget -qO- https://raw.githubusercontent.com/Skurat/zabbix_scripts/main/zabbix_update_host.json  | sed "s/\$hostid/$HOST_ID/" | sed "s/\$groupid/$GROUP_ID/" | sed "s/\"${GROUP_ID}\"/{\"groupid\":\"${GROUP_ID}\"}/")
-                        echo $data_update_host
+                        echo "ELSE = $HOST_IP - $data_update_host"
                         # Request for add host
                         curl -s --request POST \
                         --url "$zabbix_server_url" \
@@ -73,17 +74,20 @@ check_same_config_as_in_hosts(){
                     fi
                 fi
             fi
+            echo "-------------------"
     fi
 }
 
 
 
 recheck_if_hosts_group_same_as_in_hosts_txt(){
-    while IFS= read line; do
-        HOST_IP="$(echo $line | grep -o -E '^(\d{1,3}\.){3}\d{1,3}')"
-        GROUP_ID="$(echo $line | awk '{print $2}' | grep -o -E '(\d+)')"
-        check_same_config_as_in_hosts "${HOST_IP}" "${GROUP_ID}"
-    done < "hosts.txt"
+    while read line; do
+        HOST_IP="$(echo $line | grep -o -P '^(\d{1,3}\.){3}\d{1,3}')"
+        GROUP_ID="$(echo $line | awk '{print $2}' | grep -o -P '(\d+)')"
+        if [[ "$(echo $HOST_IP | grep -o -P '^(\d{1,3}\.){3}\d{1,3}')" ]]; then
+           check_same_config_as_in_hosts "${HOST_IP}" "${GROUP_ID}"
+        fi
+    done < "/root/hosts.txt"
 }
 
 recheck_if_hosts_group_same_as_in_hosts_txt
